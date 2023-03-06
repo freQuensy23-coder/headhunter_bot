@@ -36,7 +36,7 @@ async def send_hh_search_query(message: types.Message):
     r = requests.get(HH_URL, params)
     loaded = json.loads(r.content.decode())
 
-    if loaded["found"] == 0:
+    if loaded["found"] == 0: # проерка если вакансий не найдено
         await message.reply(f"К сожалению вакансий не найдено. Проверьте правильность запроса")
         return
     await message.reply(f"По вашему запросу найдено {loaded['found']} вакансий. Их обработка может занять некоторое (довольно большое) время. Результат будет отправлен по завершению работы")
@@ -49,7 +49,7 @@ async def send_hh_search_query(message: types.Message):
         loaded = json.loads(req.content.decode())
         data += loaded['items']
 
-    ids = set()
+    ids = set() # Удаляет дубликаты по смежным тегам в запросах
     for vacancy in range(len(data) - 1, -1, -1):
         if data[vacancy]['id'] in ids:
             del data[vacancy]
@@ -57,7 +57,7 @@ async def send_hh_search_query(message: types.Message):
             ids.add(data[vacancy]['id'])
 
     vacancies = [None for _ in range(len(data))]
-    for index in tqdm(range(len(data))):
+    for index in tqdm(range(len(data))): # запросы к API hh.ru
         vacancy_url = f'https://api.hh.ru/vacancies/{data[index]["id"]}'
 
         req = requests.get(vacancy_url)
@@ -73,8 +73,8 @@ async def send_hh_search_query(message: types.Message):
 
     # data.to_excel(f"{message.from_id}_{message.message_id}.xlsx")
 
-    skills = {}
-    for i in range(len(data)):
+    skills = {} #
+    for i in range(len(data)): #Подсчет скилов
         for skill in data.iloc[i]['key_skills']:
             if skill['name'] not in skills.keys():
                 skills[skill['name']] = 0
@@ -84,7 +84,7 @@ async def send_hh_search_query(message: types.Message):
     top_skills = pd.DataFrame(skills).T
     plot = sns.barplot(top_skills, orient='h')
     plot.set(title=f'Top 15 skills"{message.text}"')
-    fig = plot.get_figure()
+    fig = plot.get_figure() # рисуем график со скиллами
     fig.savefig(f"{message.from_id}_{message.message_id}.png", bbox_inches="tight")
 
     await message.reply(f"Обработка завершена")
