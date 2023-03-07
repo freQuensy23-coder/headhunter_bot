@@ -16,6 +16,8 @@ from ProcessHhData import *
 logging.basicConfig(level=logging.INFO)
 sns.set(style='whitegrid', font_scale=1.3, palette='Set2')
 
+print(os.getenv("telegram_token"))
+# print(os.environ["telegram-token"])
 # Initialize bot and dispatcher
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
 dp = Dispatcher(bot)
@@ -74,6 +76,9 @@ async def send_hh_search_query(message: types.Message):
 
     # with open(f"{message.from_id}_{message.message_id}.xlsx", 'rb') as exel:
     #     await bot.send_file()
+
+# @dp.message_handler(commands=['salary'], content_types=["text"])
+# async def get_salary(message: types.Message):
 
 
 if __name__ == '__main__':
