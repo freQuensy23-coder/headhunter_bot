@@ -4,7 +4,7 @@ import seaborn as sns
 
 class ProcessHhData:
     @classmethod
-    def get_necessery_skills(message, vacancies):
+    def get_necessery_skills(cls, message, vacancies):
         vacancies_df = pd.json_normalize(vacancies)  # ????
         data = pd.DataFrame(vacancies_df,
                             columns=['id', 'name', 'description', 'key_skills', 'salary.from', 'salary.to',
