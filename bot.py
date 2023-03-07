@@ -11,13 +11,11 @@ from tqdm import tqdm
 import texts
 from config import *
 from ProcessHhData import *
-
+from Namer import *
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 sns.set(style='whitegrid', font_scale=1.3, palette='Set2')
 
-print(os.getenv("telegram_token"))
-# print(os.environ["telegram-token"])
 # Initialize bot and dispatcher
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
 dp = Dispatcher(bot)
@@ -60,25 +58,29 @@ async def send_hh_search_query(message: types.Message):
             ids.add(data[vacancy]['id'])
 
     vacancies = [None for _ in range(len(data))]
+    # pbar = tqdm(range(len(data)))
+    num_vacancy = 0
     for index in tqdm(range(len(data))): # запросы к API hh.ru
         vacancy_url = f'https://api.hh.ru/vacancies/{data[index]["id"]}'
 
         req = requests.get(vacancy_url)
         vacancy_info = json.loads(req.content.decode())
         vacancies[index] = vacancy_info
+        # num_vacancy += 1
+        # pbar.set_postfix({'num_vacancy': num_vacancy})
         await sleep(0.9)
 
-    manager = ProcessHhData()
+    namer = Namer()
+    manager = ProcessHhData(namer)
     manager.get_necessery_skills(message, vacancies)
+    # manager.get_salary(message, vacancies)
     await message.reply(f"Обработка завершена")
-    with open(f"{message.from_id}_{message.message_id}.png", "rb") as photo:
+    with open(namer.generate_name_skills(message), "rb") as photo:
         await message.reply_photo(photo)
-
+    with open(namer.generate_name_salary(message), "rb") as photo:
+        await message.reply_photo(photo)
     # with open(f"{message.from_id}_{message.message_id}.xlsx", 'rb') as exel:
     #     await bot.send_file()
-
-# @dp.message_handler(commands=['salary'], content_types=["text"])
-# async def get_salary(message: types.Message):
 
 
 if __name__ == '__main__':
