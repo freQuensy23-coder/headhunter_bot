@@ -68,12 +68,12 @@ async def send_hh_search_query(message: types.Message):
         vacancies[index] = vacancy_info
         # num_vacancy += 1
         # pbar.set_postfix({'num_vacancy': num_vacancy})
-        await sleep(0.9)
+        await sleep(1.2)
 
     namer = Namer()
     manager = ProcessHhData(namer)
     manager.get_necessery_skills(message, vacancies)
-    # manager.get_salary(message, vacancies)
+    manager.get_salary(message, vacancies)
     await message.reply(f"Обработка завершена")
     with open(namer.generate_name_skills(message), "rb") as photo:
         await message.reply_photo(photo)

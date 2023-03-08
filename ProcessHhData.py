@@ -3,6 +3,7 @@ import seaborn as sns
 import warnings
 from Namer import *
 
+
 class ProcessHhData:
     # Namer namer
     def __init__(self, namer):
@@ -57,8 +58,10 @@ class ProcessHhData:
 
         salary_data['salary'][salary_data['salary.gross']] *= 0.87 # вычтем ндфл
 
-        plot = sns.histplot(data=salary_data, x='salary').set(title='Распределение средней зп')
-        plot.set(title=f'Distribution of salary"{message.text}"')
-        fig = plot.get_figure()  # рисуем график с заработной платой
+        # plot = sns.histplot(data=salary_data, x='salary').set(title='Распределение средней зп')
+        plot = sns.histplot(data=salary_data, x='salary')
+        plot.set(title="df")
+        # plot.set(title=f'Distribution of salary"{message.text}"')
+        fig = plot.figure  # рисуем график с заработной платой
         fig.savefig(self.namer.generate_name_salary(message), bbox_inches="tight")
 
