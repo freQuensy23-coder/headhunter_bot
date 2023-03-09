@@ -1,11 +1,15 @@
 import pandas as pd
 import seaborn as sns
 import warnings
+from Namer import *
 
 
 class ProcessHhData:
-    @classmethod
-    def get_necessery_skills(cls, message, vacancies):
+    # Namer namer
+    def __init__(self, namer):
+        self.namer = namer
+
+    def get_necessery_skills(self, message, vacancies):
         vacancies_df = pd.json_normalize(vacancies)  # ????
         data = pd.DataFrame(vacancies_df,
                             columns=['id', 'name', 'description', 'key_skills', 'salary.from', 'salary.to',
@@ -27,9 +31,11 @@ class ProcessHhData:
         plot = sns.barplot(top_skills, orient='h')
         plot.set(title=f'Top 15 skills"{message.text}"')
         fig = plot.get_figure()  # рисуем график со скиллами
-        fig.savefig(f"{message.from_id}_{message.message_id}.png", bbox_inches="tight")
 
-    @classmethod
+        fig.savefig(self.namer.generate_name_skills(message), bbox_inches="tight")
+
+    # @classmethod
+
     def get_salary(self, message, vacancies):
         vacancies_df = pd.json_normalize(vacancies)
 
@@ -52,8 +58,10 @@ class ProcessHhData:
 
         salary_data['salary'][salary_data['salary.gross']] *= 0.87 # вычтем ндфл
 
-        plot = sns.histplot(data=salary_data, x='salary').set(title='Распределение средней зп')
-        plot.set(title=f'Distribution of salary"{message.text}"')
-        fig = plot.get_figure()  # рисуем график с заработной платой
-        fig.savefig(f"{message.from_id}_{message.message_id}.png", bbox_inches="tight")
+        # plot = sns.histplot(data=salary_data, x='salary').set(title='Распределение средней зп')
+        plot = sns.histplot(data=salary_data, x='salary')
+        plot.set(title="df")
+        # plot.set(title=f'Distribution of salary"{message.text}"')
+        fig = plot.figure  # рисуем график с заработной платой
+        fig.savefig(self.namer.generate_name_salary(message), bbox_inches="tight")
 

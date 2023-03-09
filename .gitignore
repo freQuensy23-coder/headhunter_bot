@@ -124,6 +124,7 @@ celerybeat.pid
 .venv
 env/
 venv/
+venv2/
 ENV/
 env.bak/
 venv.bak/
@@ -161,3 +162,6 @@ cython_debug/
 
 # Configuration info
 config.py
+
+#png files
+*.png
