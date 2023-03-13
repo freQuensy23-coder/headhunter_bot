@@ -1,5 +1,6 @@
 import json
 import logging
+import sys
 from asyncio import sleep
 
 from aiogram import Bot, Dispatcher, executor, types
@@ -42,8 +43,12 @@ async def send_hh_search_query(message: types.Message):
         return
     await message.reply(f"По вашему запросу найдено {loaded['found']} вакансий. Их обработка может занять некоторое (довольно большое) время. Результат будет отправлен по завершению работы")
 
+    print("loaded ", loaded)
+    # print("loaded items ", loaded.items())
+    print("loaded items ", json.dumps(loaded['items'], indent=2))
+    print("loaded pages ", json.dumps(loaded['pages'], indent=2))
     data = []
-    for page in range(1, loaded['pages']):
+    for page in range(0, loaded['pages']):
         await sleep(1)
         params['page'] = page
         req = requests.get(HH_URL, params)
@@ -62,7 +67,7 @@ async def send_hh_search_query(message: types.Message):
     num_vacancy = 0
     for index in tqdm(range(len(data))): # запросы к API hh.ru
         vacancy_url = f'https://api.hh.ru/vacancies/{data[index]["id"]}'
-
+        print(data[index]["id"])
         req = requests.get(vacancy_url)
         vacancy_info = json.loads(req.content.decode())
         vacancies[index] = vacancy_info
@@ -70,6 +75,10 @@ async def send_hh_search_query(message: types.Message):
         # pbar.set_postfix({'num_vacancy': num_vacancy})
         await sleep(1.2)
 
+    print("vacancies ", vacancies)
+    if not vacancies:
+        await message.reply(f"По вашему запросу не найдено ни одной вакансии")
+        sys.exit()
     namer = Namer()
     manager = ProcessHhData(namer)
     manager.get_necessery_skills(message, vacancies)

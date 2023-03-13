@@ -27,6 +27,7 @@ class ProcessHhData:
                 skills[skill['name']] += 1
 
         skills = pd.Series(skills).sort_values(ascending=False).head(15)
+
         top_skills = pd.DataFrame(skills).T
         plot = sns.barplot(top_skills, orient='h')
         plot.set(title=f'Top 15 skills"{message.text}"')
@@ -62,7 +63,7 @@ class ProcessHhData:
 
         # print(sl)
         # plot = sns.histplot(data=salary_data, x='salary').set(title='Распределение средней зп')
-
+        # plt.ylim(0, 20)
         p = sns.histplot(data=salary_data, x='salary')
         p.set(xlabel='Salary', ylabel='Count')
         # plot.set(title="df")
