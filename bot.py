@@ -10,8 +10,8 @@ from tqdm import tqdm
 
 import texts
 from config import *
-from ProcessHhData import *
-from Namer import *
+from ProcessHhData import ProcessHhData
+from Namer import Namer
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 sns.set(style='whitegrid', font_scale=1.3, palette='Set2')

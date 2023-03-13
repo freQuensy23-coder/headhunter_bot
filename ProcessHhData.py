@@ -1,7 +1,7 @@
 import pandas as pd
 import seaborn as sns
 import warnings
-from Namer import *
+from Namer import Namer
 
 
 class ProcessHhData:
@@ -37,12 +37,14 @@ class ProcessHhData:
     # @classmethod
 
     def get_salary(self, message, vacancies):
+        # sns.reset_defaults()
         vacancies_df = pd.json_normalize(vacancies)
 
         data = pd.DataFrame(vacancies_df,
                             columns=['id', 'name', 'description', 'key_skills', 'salary.from', 'salary.to',
                                      'salary.currency', 'salary.gross', 'address.lat', 'address.lng',
                                      'experience.id', 'employer.name']) # оставляем нужные столбцы
+
         warnings.filterwarnings('ignore')
 
         salary_data = data.dropna(subset=['salary.from', 'salary.to'])  # отбрасываем строки с неуказанной зарплатой
@@ -58,10 +60,13 @@ class ProcessHhData:
 
         salary_data['salary'][salary_data['salary.gross']] *= 0.87 # вычтем ндфл
 
+        # print(sl)
         # plot = sns.histplot(data=salary_data, x='salary').set(title='Распределение средней зп')
-        plot = sns.histplot(data=salary_data, x='salary')
-        plot.set(title="df")
+
+        p = sns.histplot(data=salary_data, x='salary')
+        p.set(xlabel='Salary', ylabel='Count')
+        # plot.set(title="df")
         # plot.set(title=f'Distribution of salary"{message.text}"')
-        fig = plot.figure  # рисуем график с заработной платой
+        fig = p.figure  # рисуем график с заработной платой
         fig.savefig(self.namer.generate_name_salary(message), bbox_inches="tight")
 
