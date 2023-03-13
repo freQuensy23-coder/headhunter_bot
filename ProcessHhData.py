@@ -84,9 +84,9 @@ class ProcessHhData:
         # p.axes.set_ylabel("Count")
         print("counts ", counts)
         uc = np.unique(counts)
-        print("unique counts ", uc)
-        print("uc.size ", uc.size)
-        print("np.array(uc.size) ", np.array(uc.size))
+        # print("unique counts ", uc)
+        # print("uc.size ", uc.size)
+        # print("np.array(uc.size) ", np.array(uc.size))
         # plt.yticks(ticks = range(uc.size), labels=uc)
         fig, ax1 = plt.subplots()
         # ax1.yaxis.set_major_locator(AutoLocator())  # solution
