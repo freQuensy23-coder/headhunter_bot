@@ -86,8 +86,11 @@ async def send_hh_search_query(message: types.Message):
     await message.reply(f"Обработка завершена")
     with open(namer.generate_name_skills(message), "rb") as photo:
         await message.reply_photo(photo)
+    os.remove(namer.generate_name_skills(message))
     with open(namer.generate_name_salary(message), "rb") as photo:
         await message.reply_photo(photo)
+    os.remove(namer.generate_name_salary(message))
+
     # with open(f"{message.from_id}_{message.message_id}.xlsx", 'rb') as exel:
     #     await bot.send_file()
 
