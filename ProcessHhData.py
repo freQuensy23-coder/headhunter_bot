@@ -15,7 +15,6 @@ class ProcessHhData:
         self.namer = namer
 
     def get_necessery_skills(self, user_query, name_saved_file, vacancies):
-        sns.reset_defaults()
         vacancies_df = pd.json_normalize(vacancies)  # ????
         data = pd.DataFrame(vacancies_df,
                             columns=['id', 'name', 'description', 'key_skills', 'salary.from', 'salary.to',
@@ -45,7 +44,6 @@ class ProcessHhData:
     # @classmethod
 
     def get_salary(self, user_query, name_saved_file, vacancies):
-        sns.reset_defaults()
         vacancies_df = pd.json_normalize(vacancies)
 
         data = pd.DataFrame(vacancies_df,
@@ -56,12 +54,10 @@ class ProcessHhData:
         # warnings.filterwarnings('ignore')
 
         salary_data = data.dropna(subset=['salary.from', 'salary.to'])  # отбрасываем строки с неуказанной зарплатой
-        print("salary data  ", salary_data)
-        print("salary data size ", salary_data.size)
+
 
         salary_data['salary'] = 0.5 * (salary_data['salary.from'] + salary_data['salary.to'])  # оценим зарплату по вакансии как среднее между верхней и нижней
 
-        print("salary_data['salary'] size ", salary_data['salary'].size)
         #
         # usd_to_rub = 75.25 # зафиксируем курсы валют
         # eur_to_rub = 80.1
@@ -73,7 +69,6 @@ class ProcessHhData:
 
         counts, bins = np.histogram(salary_data['salary'])
         p = plt.stairs(counts, bins)
-        print("counts ", counts)
         uc = np.unique(counts)
 
         fig, ax1 = plt.subplots()
