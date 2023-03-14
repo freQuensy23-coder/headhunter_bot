@@ -14,7 +14,7 @@ class ProcessHhData:
     def __init__(self, namer):
         self.namer = namer
 
-    def get_necessery_skills(self, message, vacancies):
+    def get_necessery_skills(self, user_query, name_saved_file, vacancies):
         sns.reset_defaults()
         vacancies_df = pd.json_normalize(vacancies)  # ????
         data = pd.DataFrame(vacancies_df,
@@ -36,15 +36,15 @@ class ProcessHhData:
 
         top_skills = pd.DataFrame(skills).T
         plot = sns.barplot(top_skills, orient='h')
-        plot.set(title=f'Top 15 skills"{message.text}"')
+        plot.set(title=f'Top 15 skills"{user_query}"')
         fig = plot.get_figure()  # рисуем график со скиллами
 
-        fig.savefig(self.namer.generate_name_skills(message), bbox_inches="tight")
+        fig.savefig(name_saved_file, bbox_inches="tight")
         fig, ax1 = plt.subplots()
         ax1.yaxis.set_major_locator(AutoLocator())
     # @classmethod
 
-    def get_salary(self, message, vacancies):
+    def get_salary(self, user_query, name_saved_file, vacancies):
         sns.reset_defaults()
         vacancies_df = pd.json_normalize(vacancies)
 
@@ -100,5 +100,5 @@ class ProcessHhData:
         fig = p.figure  # рисуем график с заработной платой
         # p.figure
         # plt.savefig(self.namer.generate_name_salary(message))
-        fig.savefig(self.namer.generate_name_salary(message), bbox_inches="tight")
+        fig.savefig(name_saved_file, bbox_inches="tight")
 
