@@ -33,10 +33,8 @@ async def send_welcome(message: types.Message):
 @dp.callback_query_handler(lambda callback_query: True)
 async def callback_inline(call: types.CallbackQuery):
     if call.data == 'no':
-        # bot.send_message(call.message.chat.id, 'Бывает ')
         await call.message.answer("Хорошо")
     else:
-        # pass
         await call.message.answer("Сейчас соберем статичтику, ожидайте")
         plot_salary, plot_skills = await process_hh_query(call.data, call.id)
         print("name of file are ", plot_salary)
@@ -72,7 +70,6 @@ async def send_hh_search_query(message: types.Message):
         await message.reply(f"К сожалению вакансий не найдено. Проверьте правильность запроса")
         return
 
-    # some code
 
     btn = InlineKeyboardButton('Да', callback_data=message.text)
     btn2 = InlineKeyboardButton('Нет', callback_data='no')
@@ -126,10 +123,7 @@ async def process_hh_query(user_query, call_id):
         # pbar.set_postfix({'num_vacancy': num_vacancy})
         await sleep(1.2)
 
-    # print("vacancies ", vacancies)
-    # if not vacancies:
-    #     await message.reply(f"По вашему запросу не найдено ни одной вакансии")
-    #     sys.exit()
+
     namer = Namer()
     process_data = ProcessHhData(namer)
     plot_skills = namer.generate_name_skills(call_id)

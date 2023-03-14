@@ -71,34 +71,14 @@ class ProcessHhData:
         #
         # salary_data['salary'][salary_data['salary.gross']] *= 0.87 # вычтем ндфл
 
-        # print(sl)
-        # plot = sns.histplot(data=salary_data, x='salary').set(title='Распределение средней зп')
-        # plt.ylim(0, 20)
-        # print(np.histogram(salary_data['salary'], bins=[0, 100000, 200000, 300000]))
         counts, bins = np.histogram(salary_data['salary'])
         p = plt.stairs(counts, bins)
-        # p = plt.hist(bins[:-1], bins, weights=counts, label=f"Distribution of salary in {message}")
-
-        # plt.yticks(np.arange(counts.size), counts)
-        # p.axes.set_xlabel("Salary")
-        # p.axes.set_ylabel("Count")
         print("counts ", counts)
         uc = np.unique(counts)
-        # print("unique counts ", uc)
-        # print("uc.size ", uc.size)
-        # print("np.array(uc.size) ", np.array(uc.size))
-        # plt.yticks(ticks = range(uc.size), labels=uc)
+
         fig, ax1 = plt.subplots()
-        # ax1.yaxis.set_major_locator(AutoLocator())  # solution
         ax1.set(yticks=uc)
-
-        # p = sns.histplot(data=salary_data, x='salary')
-
-        # p.set(xlabel='Salary', ylabel='Count')
-        # plot.set(title="df")
-        # plot.set(title=f'Distribution of salary"{message.text}"')
         fig = p.figure  # рисуем график с заработной платой
-        # p.figure
-        # plt.savefig(self.namer.generate_name_salary(message))
+
         fig.savefig(name_saved_file, bbox_inches="tight")
 
