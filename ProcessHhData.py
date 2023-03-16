@@ -77,3 +77,11 @@ class ProcessHhData:
 
         fig.savefig(name_saved_file, bbox_inches="tight")
 
+    def genrate_excel(self, name_saved_file, vacancies):
+        vacancies_df = pd.json_normalize(vacancies)
+
+        data = pd.DataFrame(vacancies_df,
+                            columns=['id', 'name', 'description', 'key_skills', 'salary.from', 'salary.to',
+                                     'salary.currency', 'salary.gross', 'address.lat', 'address.lng',
+                                     'experience.id', 'employer.name'])  # оставляем нужные столбцы
+        data.to_excel(name_saved_file)

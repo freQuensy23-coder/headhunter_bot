@@ -36,17 +36,19 @@ async def callback_inline(call: types.CallbackQuery):
         await call.message.answer("Хорошо")
     else:
         await call.message.answer("Сейчас соберем статичтику, ожидайте")
-        plot_salary, plot_skills = await process_hh_query(call.data, call.id)
-        print("name of file are ", plot_salary)
-        print("type of plot_salary ", plot_salary)
+        name_plot_salary, name_plot_skills, name_excel = await process_hh_query(call.data, call.id)
+        print("name of file are ", name_plot_salary)
+        print("type of name_plot_salary ", name_plot_salary)
 
-        with open(plot_salary, "rb") as photo:
+        with open(name_plot_salary, "rb") as photo:
             await bot.send_photo(call.message.chat.id, photo)
-        os.remove(plot_salary)
-        with open(plot_skills, "rb") as photo:
+        os.remove(name_plot_salary)
+        with open(name_plot_skills, "rb") as photo:
             await bot.send_photo(call.message.chat.id, photo)
-        os.remove(plot_skills)
-
+        os.remove(name_plot_skills)
+        with open(name_excel, 'rb') as excel:
+            await bot.send_document(call.message.chat.id, ('Вакансии.xlsx', excel))
+        os.remove(name_excel)
     try:
         print(call)
         if call.message:
@@ -81,8 +83,7 @@ async def send_hh_search_query(message: types.Message):
 
 
 
-    # with open(f"{message.from_id}_{message.message_id}.xlsx", 'rb') as exel:
-    #     await bot.send_file()
+
 
 async def process_hh_query(user_query, call_id):
     params = {
@@ -128,9 +129,13 @@ async def process_hh_query(user_query, call_id):
     process_data = ProcessHhData(namer)
     plot_skills = namer.generate_name_skills(call_id)
     process_data.get_necessery_skills(user_query, namer.generate_name_skills(call_id), vacancies)
-    plot_salary = namer.generate_name_salary(call_id)
+    name_plot_salary = namer.generate_name_salary(call_id)
     process_data.get_salary(user_query, namer.generate_name_salary(call_id), vacancies)
-    return plot_skills, plot_salary
+
+    name_excel = namer.generate_name_vacancies_xlsx(call_id)
+    process_data.genrate_excel(name_excel, vacancies)
+
+    return plot_skills, name_plot_salary, name_excel
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
