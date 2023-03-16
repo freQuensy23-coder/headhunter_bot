@@ -37,8 +37,6 @@ async def callback_inline(call: types.CallbackQuery):
     else:
         await call.message.answer("Сейчас соберем статичтику, ожидайте")
         name_plot_salary, name_plot_skills, name_excel = await process_hh_query(call.data, call.id)
-        print("name of file are ", name_plot_salary)
-        print("type of name_plot_salary ", name_plot_salary)
 
         with open(name_plot_salary, "rb") as photo:
             await bot.send_photo(call.message.chat.id, photo)
@@ -50,7 +48,6 @@ async def callback_inline(call: types.CallbackQuery):
             await bot.send_document(call.message.chat.id, ('Вакансии.xlsx', excel))
         os.remove(name_excel)
     try:
-        print(call)
         if call.message:
             pass
 
@@ -112,16 +109,12 @@ async def process_hh_query(user_query, call_id):
             ids.add(data[vacancy]['id'])
 
     vacancies = [None for _ in range(len(data))]
-    # pbar = tqdm(range(len(data)))
-    num_vacancy = 0
+
     for index in tqdm(range(len(data))):  # запросы к API hh.ru
         vacancy_url = f'https://api.hh.ru/vacancies/{data[index]["id"]}'
-        print(data[index]["id"])
         req = requests.get(vacancy_url)
         vacancy_info = json.loads(req.content.decode())
         vacancies[index] = vacancy_info
-        # num_vacancy += 1
-        # pbar.set_postfix({'num_vacancy': num_vacancy})
         await sleep(1.2)
 
 

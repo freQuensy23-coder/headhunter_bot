@@ -10,7 +10,6 @@ from Namer import Namer
 
 
 class ProcessHhData:
-    # Namer namer
     def __init__(self, namer):
         self.namer = namer
 
@@ -22,7 +21,6 @@ class ProcessHhData:
                                      'experience.id', 'employer.name',
                                      ])
 
-        # data.to_excel(f"{message.from_id}_{message.message_id}.xlsx")
 
         skills = {}  #
         for i in range(len(data)):  # Подсчет скилов
@@ -51,21 +49,19 @@ class ProcessHhData:
                                      'salary.currency', 'salary.gross', 'address.lat', 'address.lng',
                                      'experience.id', 'employer.name']) # оставляем нужные столбцы
 
-        # warnings.filterwarnings('ignore')
 
         salary_data = data.dropna(subset=['salary.from', 'salary.to'])  # отбрасываем строки с неуказанной зарплатой
 
 
         salary_data['salary'] = 0.5 * (salary_data['salary.from'] + salary_data['salary.to'])  # оценим зарплату по вакансии как среднее между верхней и нижней
 
-        #
-        # usd_to_rub = 75.25 # зафиксируем курсы валют
-        # eur_to_rub = 80.1
-        #
-        # salary_data['salary'][salary_data['salary.currency'] == 'USD'] *= usd_to_rub  # переведем в рубли
-        # salary_data['salary'][salary_data['salary.currency'] == 'EUR'] *= eur_to_rub
-        #
-        # salary_data['salary'][salary_data['salary.gross']] *= 0.87 # вычтем ндфл
+        usd_to_rub = 75.25 # зафиксируем курсы валют
+        eur_to_rub = 80.1
+
+        salary_data['salary'][salary_data['salary.currency'] == 'USD'] *= usd_to_rub  # переведем в рубли
+        salary_data['salary'][salary_data['salary.currency'] == 'EUR'] *= eur_to_rub
+
+        salary_data['salary'][salary_data['salary.gross']] *= 0.87 # вычтем ндфл
 
         counts, bins = np.histogram(salary_data['salary'])
         p = plt.stairs(counts, bins)
