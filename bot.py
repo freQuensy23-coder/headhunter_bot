@@ -91,7 +91,6 @@ async def process_hh_query(user_query, call_id):
         'page': 0,
         'per_page': 10
     }
-    print("message.text ", user_query)
     r = requests.get(HH_URL, params)
     loaded = json.loads(r.content.decode())
     data = []
@@ -102,7 +101,6 @@ async def process_hh_query(user_query, call_id):
         loaded = json.loads(req.content.decode())
         data += loaded['items']
 
-    print(loaded)
     ids = set()  # Удаляет дубликаты по смежным тегам в запросах
     for vacancy in range(len(data) - 1, -1, -1):
         if data[vacancy]['id'] in ids:
