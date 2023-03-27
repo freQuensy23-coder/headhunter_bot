@@ -6,7 +6,7 @@ from typing import Text
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
-from loguru import logger# Add convinient library for logging
+from loguru import logger  # Add convinient library for logging
 import requests
 import pandas as pd
 import seaborn as sns
@@ -16,6 +16,7 @@ import texts
 from config import *
 from ProcessHhData import ProcessHhData
 from Namer import Namer
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger.add("app.log", format="{time} {level} {message}", level="DEBUG", rotation="1 week", compression="zip")
@@ -57,6 +58,8 @@ async def callback_inline(call: types.CallbackQuery):
     except Exception as e:
         print(repr(e))
 
+
+
 @dp.message_handler(content_types=["text"])
 async def send_hh_search_query(message: types.Message):
     params = {
@@ -71,24 +74,21 @@ async def send_hh_search_query(message: types.Message):
 
     logger.info(f"Found {loaded['found']} vacancies from API HH")
     logger.info(f"loaded {count_of_loaded_pages} pages from API HH")
-    if loaded["found"] == 0: # проерка если вакансий не найдено
+    if loaded["found"] == 0:  # проерка если вакансий не найдено
         await message.reply(f"К сожалению вакансий не найдено. Проверьте правильность запроса")
         return
-
 
     btn = InlineKeyboardButton('Да', callback_data=message.text)
     btn2 = InlineKeyboardButton('Нет', callback_data='no')
     start_keyboard = InlineKeyboardMarkup(resize_keyboard=True)
     start_keyboard.add(btn, btn2)
 
-
     await message.reply(f"По вашему запросу найдено {loaded['found']}\
-     вакансий. Их обработка может занять некоторое (довольно большое) время. Результат будет отправлен по завершению работы", reply_markup= start_keyboard)
+     вакансий. Их обработка может занять некоторое (довольно большое) время. Результат будет отправлен по завершению работы",
+                        reply_markup=start_keyboard)
 
 
-
-
-
+@logger.catch()
 async def process_hh_query(user_query, call_id):
     params = {
         'text': user_query,
@@ -99,7 +99,6 @@ async def process_hh_query(user_query, call_id):
     r = requests.get(HH_URL, params)
     loaded = json.loads(r.content.decode())
     count_of_loaded_pages = loaded['pages']
-
 
     data = []
     for page in range(0, count_of_loaded_pages):
@@ -138,6 +137,7 @@ async def process_hh_query(user_query, call_id):
     process_data.genrate_excel(name_excel, vacancies)
 
     return plot_skills, name_plot_salary, name_excel
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
