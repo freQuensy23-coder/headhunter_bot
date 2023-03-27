@@ -18,6 +18,7 @@ from ProcessHhData import ProcessHhData
 from Namer import Namer
 # Configure logging
 logging.basicConfig(level=logging.INFO)
+logger.add("app.log", format="{time} {level} {message}", level="DEBUG", rotation="1 week", compression="zip")
 
 sns.set(style='whitegrid', font_scale=1.3, palette='Set2')
 
@@ -66,7 +67,10 @@ async def send_hh_search_query(message: types.Message):
     }
     r = requests.get(HH_URL, params)
     loaded = json.loads(r.content.decode())
+    count_of_loaded_pages = loaded['pages']
 
+    logger.info(f"Found {loaded['found']} vacancies from API HH")
+    logger.info(f"loaded {count_of_loaded_pages} pages from API HH")
     if loaded["found"] == 0: # проерка если вакансий не найдено
         await message.reply(f"К сожалению вакансий не найдено. Проверьте правильность запроса")
         return
@@ -76,6 +80,7 @@ async def send_hh_search_query(message: types.Message):
     btn2 = InlineKeyboardButton('Нет', callback_data='no')
     start_keyboard = InlineKeyboardMarkup(resize_keyboard=True)
     start_keyboard.add(btn, btn2)
+
 
     await message.reply(f"По вашему запросу найдено {loaded['found']}\
      вакансий. Их обработка может занять некоторое (довольно большое) время. Результат будет отправлен по завершению работы", reply_markup= start_keyboard)
@@ -93,8 +98,11 @@ async def process_hh_query(user_query, call_id):
     }
     r = requests.get(HH_URL, params)
     loaded = json.loads(r.content.decode())
+    count_of_loaded_pages = loaded['pages']
+
+
     data = []
-    for page in range(0, loaded['pages']):
+    for page in range(0, count_of_loaded_pages):
         await sleep(1)
         params['page'] = page
         req = requests.get(HH_URL, params)
@@ -117,6 +125,7 @@ async def process_hh_query(user_query, call_id):
         vacancies[index] = vacancy_info
         await sleep(1.2)
 
+    logger.info(f"All  different vacancies {len(vacancies)}")
 
     namer = Namer()
     process_data = ProcessHhData(namer)
