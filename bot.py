@@ -6,6 +6,7 @@ from typing import Text
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+from loguru import logger# Add convinient library for logging
 import requests
 import pandas as pd
 import seaborn as sns
@@ -17,6 +18,7 @@ from ProcessHhData import ProcessHhData
 from Namer import Namer
 # Configure logging
 logging.basicConfig(level=logging.INFO)
+
 sns.set(style='whitegrid', font_scale=1.3, palette='Set2')
 
 # Initialize bot and dispatcher
