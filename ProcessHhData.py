@@ -7,6 +7,7 @@ import warnings
 
 from PIL import Image, ImageDraw, ImageFont
 from loguru import logger
+from texts import Messages
 
 from matplotlib import pyplot as plt
 from matplotlib.ticker import AutoLocator
@@ -90,13 +91,9 @@ class ProcessHhData:
         logger.info(f"Excel file has been created")
 
     def add_logo(self, name_saved_file):
-        logger.info(f"add_logo  {name_saved_file}")
         img = Image.open(name_saved_file)
-        # img.resize((878, 446), Image.ANTIALIAS)
         # Call draw Method to add 2D graphics in an image
         I = ImageDraw.Draw(img)
-        default_width = 878
-        logger.info(f"{img.width} {img.height}")
         size_text = 10
 
         # Add Text to an image
@@ -106,7 +103,7 @@ class ProcessHhData:
 
         fnt = ImageFont.truetype("Styles/DejaVuSansMono-BoldOblique.ttf", size_text)
 
-        I.text((x_coordinate_to_add_text, y_coordinate_to_add_text), "@JobHuntHelper", fill=(255, 0, 0), font=fnt)
+        I.text((x_coordinate_to_add_text, y_coordinate_to_add_text), Messages.Company.telegram_link, fill=(255, 0, 0), font=fnt)
 
         # Save the edited image
         os.remove(name_saved_file)

@@ -9,3 +9,6 @@ class Messages:
                         "For get statistics from hh.ru by position just type his 'name'." \
                         "\nFor example type 'ruby' or 'Programmer' if you want to see what kind of skills employer search for these specialists." \
                         "Also type 'delivery' or 'engineer' if you are interested."
+
+    class Company:
+        telegram_link = "@JobHuntHelper"
