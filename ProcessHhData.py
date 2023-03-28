@@ -1,7 +1,11 @@
+import os
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import warnings
+
+from PIL import Image, ImageDraw, ImageFont
 from loguru import logger
 
 from matplotlib import pyplot as plt
@@ -35,10 +39,10 @@ class ProcessHhData:
         plot = sns.barplot(top_skills, orient='h')
         plot.set(title=f'Top 15 skills"{user_query}"')
         fig = plot.get_figure()  # рисуем график со скиллами
-
         fig.savefig(name_saved_file, bbox_inches="tight")
         fig, ax1 = plt.subplots()
         ax1.yaxis.set_major_locator(AutoLocator())
+        self.add_logo(name_saved_file)
         logger.info(f"Skills diagram has been drawn")
     # @classmethod
 
@@ -72,6 +76,7 @@ class ProcessHhData:
         fig = p.figure  # рисуем график с заработной платой
 
         fig.savefig(name_saved_file, bbox_inches="tight")
+        self.add_logo(name_saved_file)
         logger.info(f"Salary diagram has been drawn")
 
     def genrate_excel(self, name_saved_file, vacancies):
@@ -83,3 +88,26 @@ class ProcessHhData:
                                      'experience.id', 'employer.name'])  # оставляем нужные столбцы
         data.to_excel(name_saved_file)
         logger.info(f"Excel file has been created")
+
+    def add_logo(self, name_saved_file):
+        logger.info(f"add_logo  {name_saved_file}")
+        img = Image.open(name_saved_file)
+        # img.resize((878, 446), Image.ANTIALIAS)
+        # Call draw Method to add 2D graphics in an image
+        I = ImageDraw.Draw(img)
+        default_width = 878
+        logger.info(f"{img.width} {img.height}")
+        size_text = 10
+
+        # Add Text to an image
+        x_coeff = 1 - 100/img.width
+        x_coordinate_to_add_text = x_coeff * img.width
+        y_coordinate_to_add_text = 0.97 * img.height
+
+        fnt = ImageFont.truetype("Styles/DejaVuSansMono-BoldOblique.ttf", size_text)
+
+        I.text((x_coordinate_to_add_text, y_coordinate_to_add_text), "@JobHuntHelper", fill=(255, 0, 0), font=fnt)
+
+        # Save the edited image
+        os.remove(name_saved_file)
+        img.save(name_saved_file)
