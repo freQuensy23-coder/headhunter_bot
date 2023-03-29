@@ -3,9 +3,9 @@ import logging
 import sys
 from asyncio import sleep
 from typing import Text
-
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+from loguru import logger  # Add convinient library for logging
 import requests
 import pandas as pd
 import seaborn as sns
@@ -15,8 +15,11 @@ import texts
 from config import *
 from ProcessHhData import ProcessHhData
 from Namer import Namer
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
+logger.add("app.log", format="{time} {level} {message}", level="DEBUG", rotation="1 week", compression="zip")
+
 sns.set(style='whitegrid', font_scale=1.3, palette='Set2')
 
 # Initialize bot and dispatcher
@@ -37,8 +40,6 @@ async def callback_inline(call: types.CallbackQuery):
     else:
         await call.message.answer("Сейчас соберем статичтику, ожидайте")
         name_plot_salary, name_plot_skills, name_excel = await process_hh_query(call.data, call.id)
-        print("name of file are ", name_plot_salary)
-        print("type of name_plot_salary ", name_plot_salary)
 
         with open(name_plot_salary, "rb") as photo:
             await bot.send_photo(call.message.chat.id, photo)
@@ -50,12 +51,13 @@ async def callback_inline(call: types.CallbackQuery):
             await bot.send_document(call.message.chat.id, ('Вакансии.xlsx', excel))
         os.remove(name_excel)
     try:
-        print(call)
         if call.message:
             pass
 
     except Exception as e:
         print(repr(e))
+
+
 
 @dp.message_handler(content_types=["text"])
 async def send_hh_search_query(message: types.Message):
@@ -67,11 +69,13 @@ async def send_hh_search_query(message: types.Message):
     }
     r = requests.get(HH_URL, params)
     loaded = json.loads(r.content.decode())
+    count_of_loaded_pages = loaded['pages']
 
-    if loaded["found"] == 0: # проерка если вакансий не найдено
+    logger.info(f"Found {loaded['found']} vacancies from API HH")
+    logger.info(f"loaded {count_of_loaded_pages} pages from API HH")
+    if loaded["found"] == 0:  # проерка если вакансий не найдено
         await message.reply(f"К сожалению вакансий не найдено. Проверьте правильность запроса")
         return
-
 
     btn = InlineKeyboardButton('Да', callback_data=message.text)
     btn2 = InlineKeyboardButton('Нет', callback_data='no')
@@ -79,12 +83,11 @@ async def send_hh_search_query(message: types.Message):
     start_keyboard.add(btn, btn2)
 
     await message.reply(f"По вашему запросу найдено {loaded['found']}\
-     вакансий. Их обработка может занять некоторое (довольно большое) время. Результат будет отправлен по завершению работы", reply_markup= start_keyboard)
+     вакансий. Их обработка может занять некоторое (довольно большое) время. Результат будет отправлен по завершению работы",
+                        reply_markup=start_keyboard)
 
 
-
-
-
+@logger.catch()
 async def process_hh_query(user_query, call_id):
     params = {
         'text': user_query,
@@ -92,18 +95,18 @@ async def process_hh_query(user_query, call_id):
         'page': 0,
         'per_page': 10
     }
-    print("message.text ", user_query)
     r = requests.get(HH_URL, params)
     loaded = json.loads(r.content.decode())
+    count_of_loaded_pages = loaded['pages']
+
     data = []
-    for page in range(0, loaded['pages']):
+    for page in range(0, count_of_loaded_pages):
         await sleep(1)
         params['page'] = page
         req = requests.get(HH_URL, params)
         loaded = json.loads(req.content.decode())
         data += loaded['items']
 
-    print(loaded)
     ids = set()  # Удаляет дубликаты по смежным тегам в запросах
     for vacancy in range(len(data) - 1, -1, -1):
         if data[vacancy]['id'] in ids:
@@ -112,18 +115,15 @@ async def process_hh_query(user_query, call_id):
             ids.add(data[vacancy]['id'])
 
     vacancies = [None for _ in range(len(data))]
-    # pbar = tqdm(range(len(data)))
-    num_vacancy = 0
+
     for index in tqdm(range(len(data))):  # запросы к API hh.ru
         vacancy_url = f'https://api.hh.ru/vacancies/{data[index]["id"]}'
-        print(data[index]["id"])
         req = requests.get(vacancy_url)
         vacancy_info = json.loads(req.content.decode())
         vacancies[index] = vacancy_info
-        # num_vacancy += 1
-        # pbar.set_postfix({'num_vacancy': num_vacancy})
         await sleep(1.2)
 
+    logger.info(f"All  different vacancies {len(vacancies)}")
 
     namer = Namer()
     process_data = ProcessHhData(namer)
@@ -136,6 +136,7 @@ async def process_hh_query(user_query, call_id):
     process_data.genrate_excel(name_excel, vacancies)
 
     return plot_skills, name_plot_salary, name_excel
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
