@@ -38,7 +38,7 @@ async def callback_inline(call: types.CallbackQuery):
     if call.data == 'no':
         await call.message.answer("Хорошо")
     else:
-        await call.message.answer("Сейчас соберем статичтику, ожидайте")
+        await call.message.answer("Сейчас соберем статистику, ожидайте")
         name_plot_salary, name_plot_skills, name_excel = await process_hh_query(call.data, call.id)
 
         with open(name_plot_salary, "rb") as photo:
