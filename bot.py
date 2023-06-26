@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import sys
 from asyncio import sleep
 from typing import Text
@@ -29,16 +30,17 @@ dp = Dispatcher(bot)
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
-    await message.reply(texts.Messages.Registration.start_message)
+    await message.reply(texts.Lang.EN.Messages.Registration.start_message)
 
 
 # async def check
 @dp.callback_query_handler(lambda callback_query: True)
 async def callback_inline(call: types.CallbackQuery):
+    logger.info(f"calback inline handled, usera answer is {call.data}")
     if call.data == 'no':
-        await call.message.answer("Хорошо")
+        await call.message.answer(texts.Lang.RU.Messages.Requests.decline_HH_query_send_another_request)
     else:
-        await call.message.answer("Сейчас соберем статичтику, ожидайте")
+        await call.message.answer(texts.Lang.RU.Messages.Requests.start_grabbing_statistics)
         name_plot_salary, name_plot_skills, name_excel = await process_hh_query(call.data, call.id)
 
         with open(name_plot_salary, "rb") as photo:
@@ -74,7 +76,7 @@ async def send_hh_search_query(message: types.Message):
     logger.info(f"Found {loaded['found']} vacancies from API HH")
     logger.info(f"loaded {count_of_loaded_pages} pages from API HH")
     if loaded["found"] == 0:  # проерка если вакансий не найдено
-        await message.reply(f"К сожалению вакансий не найдено. Проверьте правильность запроса")
+        await message.reply(texts.Lang.RU.Messages.Requests.not_correct_request)
         return
 
     btn = InlineKeyboardButton('Да', callback_data=message.text)
@@ -83,7 +85,7 @@ async def send_hh_search_query(message: types.Message):
     start_keyboard.add(btn, btn2)
 
     await message.reply(f"По вашему запросу найдено {loaded['found']}\
-     вакансий. Их обработка может занять некоторое (довольно большое) время. Результат будет отправлен по завершению работы",
+     вакансий. Их займет примерно {loaded['found'] * 1.5} секунд. Результат будет отправлен по завершению работы",
                         reply_markup=start_keyboard)
 
 

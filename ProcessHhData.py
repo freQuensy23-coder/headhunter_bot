@@ -7,8 +7,7 @@ import warnings
 
 from PIL import Image, ImageDraw, ImageFont
 from loguru import logger
-from texts import Messages
-
+import texts
 from matplotlib import pyplot as plt
 from matplotlib.ticker import AutoLocator
 
@@ -103,7 +102,7 @@ class ProcessHhData:
 
         fnt = ImageFont.truetype("Styles/DejaVuSansMono-BoldOblique.ttf", size_text)
 
-        I.text((x_coordinate_to_add_text, y_coordinate_to_add_text), Messages.Company.telegram_link, fill=(255, 0, 0), font=fnt)
+        I.text((x_coordinate_to_add_text, y_coordinate_to_add_text), texts.Lang.RU.Messages.Company.telegram_link, fill=(255, 0, 0), font=fnt)
 
         # Save the edited image
         os.remove(name_saved_file)
