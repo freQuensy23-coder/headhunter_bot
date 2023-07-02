@@ -1,6 +1,7 @@
 import time
 import requests as req
 from random_user_agent.user_agent import UserAgent
+from loguru import logger
 
 class ConnectionManager:
     def __init__(self, proxies: [dict], wait_time: float = 1.0, user_agent_manager=None):
@@ -17,7 +18,7 @@ class ConnectionManager:
         self.proxies_last_used = [time.time()] * len(proxies)
         self.wait_time = wait_time
 
-    def get(self, *args, **kwargs):
+    def get(self, *args, **kwargs): # TODO smart exception handling - turn of proxy if it fails
         """
         Rotates through proxies and waits between requests
         :param args: args to pass to requests.get
@@ -31,7 +32,7 @@ class ConnectionManager:
 
         oldest_proxy = self.oldest_proxy()
         if time.time() - self.proxies_last_used[oldest_proxy] < self.wait_time:
-            print(f"Waiting for {self.wait_time - (time.time() - self.proxies_last_used[oldest_proxy])} seconds")
+            logger.debug(f"Waiting for {self.wait_time - (time.time() - self.proxies_last_used[oldest_proxy])} seconds")
             time.sleep(self.wait_time - (time.time() - self.proxies_last_used[oldest_proxy]))
 
         self.proxies_last_used[oldest_proxy] = time.time()
