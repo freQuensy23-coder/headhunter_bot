@@ -25,7 +25,7 @@ class ConnectionManager:
             **kwargs):  # TODO smart exception handling - turn of proxy if it fails
         """
         Rotates through proxies and waits between requests
-        :param wait_for_status_code: if status code is not wait_for_status_code manager will repeat request using other proxy. This one will be banned for proxi_ban_time
+        :param wait_for_status_codes: if status code is not in wait_for_status_code manager will repeat request using other proxy. This one will be banned for proxi_ban_time
         :param args: args to pass to requests.get
         :param kwargs: kwargs to pass to requests.get
         :return: requests.get response
