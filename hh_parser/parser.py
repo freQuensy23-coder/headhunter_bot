@@ -35,7 +35,34 @@ def get_professional_roles_ids() -> list[str]:
 
 def main():
     con_manager = ConnectionManager(proxies=proxy_list)
-    roles_ids = get_professional_roles_ids()
+    # roles_ids = get_professional_roles_ids()
+    roles_ids = list(map(str, [
+    156,
+    160,
+    10,
+    12,
+    150,
+    25,
+    165,
+    34,
+    36,
+    73,
+    155,
+    96,
+    164,
+    104,
+    157,
+    107,
+    112,
+    113,
+    148,
+    114,
+    116,
+    121,
+    124,
+    125,
+    126
+]))
     station_ids = get_metro_stations_ids()
 
     for role_id in tqdm(roles_ids):
