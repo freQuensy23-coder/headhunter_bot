@@ -11,11 +11,12 @@ from loguru import logger
 BASE_VACANCIES_URL = "https://api.hh.ru/vacancies"
 log_file = "hh_parser.log"
 logger.add(log_file)
-PARSER_VER = "0.1.0"
+PARSER_VER = 2
 db = client.vacancies
 preview_collection = db.preview
 
-def get_metro_stations_ids() -> list[str]: # TODO Create mapper from id to name (and for roles too)
+
+def get_metro_stations_ids() -> list[str]:  # TODO Create mapper from id to name (and for roles too)
     logger.info("Getting metro stations ids")
     metro = req.get("https://api.hh.ru/metro").json()[0]["lines"]
     station_ids = [st["id"] for line in metro for st in line["stations"]]
