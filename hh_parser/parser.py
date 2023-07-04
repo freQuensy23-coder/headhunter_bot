@@ -18,7 +18,7 @@ preview_collection = db.preview
 
 def get_metro_stations_ids() -> list[str]:  # TODO Create mapper from id to name (and for roles too)
     logger.info("Getting metro stations ids")
-    metro = req.get("https://api.hh.ru/metro").json()[0]["lines"]
+    metro = req.get(url="https://api.hh.ru/metro").json()[0]["lines"]
     station_ids = [st["id"] for line in metro for st in line["stations"]]
     logger.debug(f"Got {len(station_ids)} metro stations ids")
     return station_ids
@@ -77,7 +77,7 @@ def main():
             }
             vacancies = []
             while True:
-                response = con_manager.get(BASE_VACANCIES_URL, params=params)
+                response = con_manager.get(url=BASE_VACANCIES_URL, params=params)
                 if response.status_code != 200:
                     logger.error(f"Got status code {response.status_code} for role {role_id} and station {station_id}")
                     break
